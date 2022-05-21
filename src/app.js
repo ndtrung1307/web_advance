@@ -4,7 +4,6 @@ const cookieParser = require("cookie-parser");
 const cookieSession = require("cookie-session");
 const path = require("path");
 const dotenv = require("dotenv");
-const morgan = require("morgan");
 dotenv.config();
 
 const routes = require("./routers");
@@ -27,8 +26,6 @@ app.use(cookieParser());
 app.use(
   cookieSession({ secret: COOKIE_SECRET, maxAge: 30 * 24 * 60 * 60 * 1000 })
 );
-
-app.use(morgan("dev"));
 
 //body parser
 app.use(express.json());
