@@ -39,4 +39,4 @@ class authenticationController {
   }
 }
 
-export default new authenticationController();
+module.exports = new authenticationController();

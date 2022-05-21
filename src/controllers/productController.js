@@ -1,8 +1,8 @@
 const { validationResult } = require("express-validator");
 
-import productRepos from "../repos/products";
-import fs from "fs";
-import path from "path";
+const productRepos = require("../repos/products");
+const fs = require("fs");
+const path = require("path");
 
 class ProductController {
   async store(req, res) {
@@ -39,4 +39,4 @@ class ProductController {
     return res.json({ message: "API List Products!" });
   }
 }
-export default new ProductController();
+module.exports = new ProductController();

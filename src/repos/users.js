@@ -10,4 +10,4 @@ class UserRepos {
   }
 }
 
-export default new UserRepos();
+module.exports = new UserRepos();

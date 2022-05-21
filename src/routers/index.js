@@ -1,7 +1,7 @@
-import productRoute from "./products";
-import users from "./users";
+const productRoute = require("./products");
+const users = require("./users");
 
-import authenticationController from "../controllers/authenticationController";
+const authenticationController = require("../controllers/authenticationController");
 
 function routes(app) {
   app.use("/", users);
@@ -20,5 +20,4 @@ function routes(app) {
     return res.json({ message: "Internal Server Error" });
   });
 }
-
-export default routes;
+module.exports = routes;

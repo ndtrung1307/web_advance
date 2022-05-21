@@ -1,6 +1,6 @@
-import express from "express";
+const express = require("express");
 
-import FileController from "../controllers/FileController";
+const FileController = require("../controllers/FileController");
 
 const router = express.Router();
 
@@ -15,4 +15,4 @@ router.post("/upload", FileController.save);
 router.put("/:link", FileController.editName);
 router.delete("/:link", FileController.destroy);
 
-export default router;
+module.exports = router;

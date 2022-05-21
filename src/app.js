@@ -1,13 +1,13 @@
-import express from "express";
-import rateLimit from "express-rate-limit";
-import cookieParser from "cookie-parser";
-import cookieSession from "cookie-session";
-import path from "path";
-import dotenv from "dotenv";
-import morgan from "morgan";
+const express = require("express");
+const rateLimit = require("express-rate-limit");
+const cookieParser = require("cookie-parser");
+const cookieSession = require("cookie-session");
+const path = require("path");
+const dotenv = require("dotenv");
+const morgan = require("morgan");
 dotenv.config();
 
-import routes from "./routers";
+const routes = require("./routers");
 const { COOKIE_SECRET } = process.env;
 
 const app = express();

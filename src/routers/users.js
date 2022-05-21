@@ -1,6 +1,6 @@
-import express from "express";
-import UserController from "../controllers/UserController";
-import { userValidator } from "../payloadValidators/usersValidators";
+const express = require("express");
+const UserController = require("../controllers/UserController");
+const { userValidator } = require("../payloadValidators/usersValidators");
 
 const router = express.Router();
 
@@ -26,4 +26,4 @@ router.post(
   UserController.store
 );
 
-export default router;
+module.exports = router;

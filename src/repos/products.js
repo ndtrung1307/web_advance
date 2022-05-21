@@ -6,4 +6,4 @@ class ProductRepos {
   }
 }
 
-export default new ProductRepos();
+module.exports = new ProductRepos();

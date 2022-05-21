@@ -1,5 +1,5 @@
-import bcrypt from "bcrypt";
-import userRepos from "../repos/users";
+const bcrypt = require("bcrypt");
+const userRepos = require("../repos/users");
 const { validationResult } = require("express-validator");
 
 var jwt = require("jsonwebtoken");
@@ -78,4 +78,4 @@ class UserController {
   }
 }
 
-export default new UserController();
+module.exports = new UserController();

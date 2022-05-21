@@ -1,5 +1,5 @@
 const multer = require("multer");
-import fs from "fs";
+const fs = require("fs");
 const upload = multer({ dest: "./uploads" });
 const deleteTemporaryImage = (name) => fs.unlinkSync("./uploads/" + name);
 

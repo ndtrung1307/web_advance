@@ -1,7 +1,7 @@
-import path from "path";
-import fs from "fs";
-import multiparty from "multiparty";
-import randomstring from "randomstring";
+const path = require("path");
+const fs = require("fs");
+const multiparty = require("multiparty");
+const randomstring = require("randomstring");
 const AdmZip = require("adm-zip");
 
 const rootPath = path.join(__dirname, "..", "files");
@@ -224,4 +224,4 @@ class FileController {
   }
 }
 
-export default new FileController();
+module.exports = new FileController();
