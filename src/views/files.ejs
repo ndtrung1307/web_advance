@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <%- include('./partials/head'); %>
+</head>
+
+<body>
+    <%- include('./partials/header'); %>
+
+        <div class="container mt-3">
+            <ol id="breadcrumb" class="breadcrumb">
+                <li class="breadcrumb-item"><a onclick="moveFolder('-')">Home</a></li>
+            </ol>
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                    <span class="input-group-text">
+                        <span class="fa fa-search"></span>
+                    </span>
+                </div>
+                <input type="text" id="search" class="form-control" placeholder="Search">
+            </div>
+            <div class="btn-group mb-3">
+                <button id="btn-new-folder" type="button" class="btn btn-light border">
+                    <i class="fas fa-folder-plus"></i> New folder
+                </button>
+                <button id="btn-file-upload" type="button" class="btn btn-light border ml-2">
+                    <i class="fas fa-file"></i> Upload file
+                </button>
+            </div>
+            <div id="file-upload" class="border rounded d-none mb-3 p-3 file-upload">
+                <h4>File upload</h4>
+                <button type="button" class="close p-3" id="btn-close-upload">×</button>
+                <form>
+                    <div class="form-group">
+                        <div class="custom-file">
+                            <input type="file" class="custom-file-input" id="customFile">
+                            <label class="custom-file-label" for="customFile">Choose file</label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="progress d-none" style="height:5px">
+                            <div class="progress-bar bg-success" style="width:40%;"></div>
+                        </div>
+                    </div>
+
+                    <button id="btn-upload" class="btn btn-success px-5"><i class="fa-solid fa-spinner d-none"></i>
+                        Upload</button>
+                </form>
+            </div>
+            <table class="table table-hover border">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Type</th>
+                        <th>Size</th>
+                        <th>Last modified</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="table-files">
+                    <% for(var i=0; i < files.length; i++) {%>
+                        <% if (files[i].type=='Folder' ) { %>
+                            <tr>
+                                <td>
+                                    <i class="fa fa-folder"></i>
+                                    <a class="folder" href="#" onclick="moveFolder('<%= files[i].path %>')">
+                                        <%= files[i].name %>
+                                    </a>
+                                </td>
+                                <td>
+                                    <%= files[i].type %>
+                                </td>
+                                <td>-</td>
+                                <td>
+                                    <%= files[i].mtime %>
+                                </td>
+                                <td>
+
+                                    <span data-path="<%= files[i].path %>" onclick="downloadFolder(this)"><i
+                                        class="fa fa-download action"></i></span>
+                                        <span data-path="<%= files[i].path %>" onclick="openEditModal(this)"><i
+                                            class="fa fa-edit action"></i></span>
+                                    <span data-path="<%= files[i].path %>" onclick="openDeleteModal(this)"><i
+                                            class="fa fa-trash action"></i></span>
+                                </td>
+                            </tr>
+                            <% } else { %>
+                                <tr>
+                                    <td>
+
+                                        <i class="<%= files[i].icon %>"></i>
+                                        <a class="folder" href="#" target="_blank">
+                                            <%= files[i].name %>
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <%= files[i].type %>
+                                    </td>
+                                    <td>
+                                        <%= files[i].size %> MB
+                                    </td>
+                                    <td>
+                                        <%= files[i].mtime %>
+                                    </td>
+                                    <td>
+                                        <span data-path="<%= files[i].path %>" ><a
+                                            class="fa fa-download action" download="<%= files[i].pathImage %>" href="<%= files[i].pathImage %>"></a></span>
+                                            <span data-path="<%= files[i].path %>" onclick="openEditModal(this)"><i
+                                                class="fa fa-edit action"></i></span>
+                                        <span data-path="<%= files[i].path %>" onclick="openDeleteModal(this)"><i
+                                                class="fa fa-trash action"></i></span>
+                                    </td>
+                                </tr>
+                                <% } %>
+                                    <% } %>
+
+                </tbody>
+            </table>
+
+
+        </div>
+
+
+        <!-- Delete dialog -->
+        <div class="modal fade" id="confirm-delete">
+            <div class="modal-dialog">
+                <div class="modal-content">
+
+                    <div class="modal-header">
+                        <h4 class="modal-title">Delete</h4>
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    </div>
+
+                    <div class="modal-body">
+                        Are you sure to delete <strong
+                            style="max-width: 273px;text-overflow: ellipsis;overflow: hidden;">da</strong>?
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger" data-dismiss="modal"
+                            onclick="deleteAcp()">Yes</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Rename dialog -->
+        <div class="modal fade" id="confirm-rename">
+            <div class="modal-dialog">
+                <div class="modal-content">
+
+                    <div class="modal-header">
+                        <h4 class="modal-title">Rename</h4>
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    </div>
+
+                    <div class="modal-body">
+                        <p>New name for <strong></strong></p>
+                        <input type="text" value="" id="new-name" class="form-control" />
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" onclick="callAPIRename()">Save</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- message dialog -->
+        <div class="modal fade" id="message-dialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+
+                    <div class="modal-header">
+                        <h4 class="modal-title">Xóa file</h4>
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    </div>
+
+                    <div class="modal-body">
+                        <p>Bạn không được cấp quyền để xóa tập tin/thư mục này</p>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-info" data-dismiss="modal">Đóng</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            let currentPath = localStorage.getItem('currentPath') || '';
+            moveFolder(currentPath);
+
+            //upload file
+            const btnFileUpload = document.getElementById('btn-file-upload');
+            const btnCloseUpload = document.getElementById('btn-close-upload');
+            const fileUpload = document.getElementById('file-upload');
+
+            btnFileUpload.addEventListener('click', function () {
+                fileUpload.classList.remove('d-none');
+                this.setAttribute('disabled', 'disabled');
+            });
+
+            const blockType = [
+                'application/x-ms-dos-executable',
+                'application/x-msi',
+                'application/x-ms-shortcut',
+                'application/x-ms-wim',
+                'application/x-ms-wim-index',
+                'application/x-ms-wim-journal',
+            ]
+
+            document.getElementById('customFile').addEventListener('change', function () {
+                const file = this.files[0];
+
+                if (!(file.size < 20 * 1024 * 1024)) {
+                    alert('File size must be less than 20MB');
+                    document.getElementById('customFile').value = '';
+                    return;
+                }
+
+                if (blockType.includes(file.type)) {
+                    alert('File type not valid');
+                    document.getElementById('customFile').value = '';
+                    return;
+                }
+            });
+
+            const btnUpload = document.getElementById('btn-upload');
+            btnUpload.addEventListener('click', function () {
+
+                if (document.getElementById('customFile').value == '') {
+                    alert('Please choose file');
+                    return;
+                }
+
+                const formData = new FormData();
+                formData.append('file', document.getElementById('customFile').files[0]);
+                formData.append('link', currentPath);
+
+                const xhr = new XMLHttpRequest();
+                xhr.open('POST', '/upload');
+                xhr.onload = function () {
+                    document.querySelector('.progress').classList.add('d-none');
+                    fileUpload.classList.add('d-none');
+                    btnFileUpload.removeAttribute('disabled');
+                    document.getElementById('customFile').value = '';
+
+                    const response = JSON.parse(xhr.responseText);
+
+                    if (response.status == 'success') {
+                        alert('Upload success');
+                        const { icon, name, type, size, mtime, path, pathImage } = response.file
+
+                        let html = `<tr>
+                                <td>
+                                    <i class="${icon}"></i>
+                                    <a class="folder" href="${pathImage}">
+                                            ${name}
+                                        </a>
+                                    
+                                </td>
+                                <td>
+                                    ${type}
+                                </td>
+                                <td>
+                                    ${size} MB
+                                </td>
+                                <td>
+                                    ${mtime}
+                                </td>
+                                <td>
+                                    <span data-path="${path}" onclick="openDeleteModal(this)"><i
+                                                class="fa fa-download action"></i></span>
+                                                <span data-path="${path}" onclick="openDeleteModal(this)"><i
+                                                class="fa fa-edit action"></i></span>
+                                    <span data-path="${path}" onclick="openDeleteModal(this)"><i
+                                                class="fa fa-trash action"></i></span>
+                                </td>
+                            </tr>`
+                        document.querySelector('#table-files').innerHTML += html;
+                    } else {
+                        alert('Upload fail');
+                    }
+                }
+                xhr.onprogress = function (e) {
+                    let percent = Math.round(e.loaded / e.total * 100);
+
+                    document.querySelector('.progress').classList.remove('d-none');
+                    document.querySelector('.progress-bar').style.width = percent + '%';
+                }
+                xhr.send(formData);
+            });
+
+            btnCloseUpload.addEventListener('click', function () {
+                fileUpload.classList.add('d-none');
+                btnFileUpload.removeAttribute('disabled');
+            });
+
+            //add new folder
+            const btnNewFolder = document.getElementById('btn-new-folder');
+            btnNewFolder.addEventListener('click', function () {
+
+                const newFolder = document.createElement('tr');
+                newFolder.innerHTML = `
+                            <td>
+                                <i class="fa fa-folder"></i>
+                                <input type="text" value="New folder" style="width: 8rem"/>
+                            </td>
+                            <td>
+                                <span>Folder</span>
+                            </td>
+                            <td>
+                                <span>-</span>
+                            </td>
+                            <td>
+                                <span>
+                                    ${new Date(Date.now()).toLocaleString('vi-VN')}
+                                </span>
+                            </td>
+                            <td>
+           
+                       
+                                <span><i class="fa fa-trash action"></i></span>
+                            </td>
+                        `;
+                const tableFiles = document.getElementById('table-files');
+                tableFiles.prepend(newFolder);
+
+                const input = newFolder.querySelector('tr:first-child input')
+                input.select();
+
+                input.addEventListener('keyup', async function (e) {
+                    //check if enter key is pressed
+                    if (e.keyCode === 13) {
+                        //get value of input
+                        const value = this.value;
+                        //remove input
+                        document.querySelector('#table-files tr:first-child td:first-child').remove()
+
+                        const folderName = await saveNewFolder(value);
+                        const td = document.createElement('td');
+                        td.innerHTML = `
+                                <i class="fa fa-folder"></i>
+                                <a class="folder" href="#"
+                                onclick="moveFolder('${currentPath + '-' + folderName}')">${folderName}</a>
+                            `;
+                        newFolder.prepend(td);
+                    }
+                });
+
+                //out focus
+                input.addEventListener('blur', async function () {
+                    //get value of input
+                    const value = this.value;
+                    //remove input
+                    document.querySelector('#table-files tr:first-child td:first-child').remove()
+                    //add new td
+
+                    const folderName = await saveNewFolder(value);
+                    const td = document.createElement('td');
+                    td.innerHTML = `
+                                <i class="fa fa-folder"></i>
+                                <a class="folder" href="#"
+                                onclick="moveFolder('${currentPath + '-' + folderName}')">${folderName}</a>
+                            `;
+                    newFolder.prepend(td);
+                });
+
+                async function saveNewFolder(folderName) {
+
+                    const fileName = await fetch('/', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ folderName })
+                    })
+                        .then(res => res.json())
+                        .then(res => {
+                            return res.folderName;
+                        })
+
+                    return fileName;
+
+                }
+
+
+            })
+
+            //set breadcrumb
+            function setBreadcrumb(path) {
+                const breadcrumb = document.getElementById('breadcrumb');
+                const pathArray = path.substring(1).split('-');
+                let html = `<li class="breadcrumb-item"><a href="#" onclick="goHome()">Home</a></li>`;
+                let breadcrumbPath = '';
+                pathArray.forEach(function (item, index) {
+
+                    breadcrumbPath += '-' + item;
+                    if (index != pathArray.length - 1) {
+                        html += `<li class="breadcrumb-item">
+                                <a href="#" onclick="moveFolder('${breadcrumbPath}')">${item}</a>
+                                </li>`;
+                    } else {
+                        html += `<li class="breadcrumb-item active"><a href="#" onclick="moveFolder('${breadcrumbPath
+                            }')">${item}</a></li>`;
+                    }
+                });
+                breadcrumb.innerHTML = html;
+            }
+
+            function goHome() {
+                localStorage.setItem('currentPath', '');
+                window.location.href = '/';
+
+            }
+
+            //move folder
+            async function moveFolder(target) {
+                currentPath = target;
+                //save current path to localStorage
+                localStorage.setItem('currentPath', currentPath);
+
+
+                const api = target.replace('-', '/');
+                const data = await fetch(api)
+                    .then(res => res.json())
+                    .then(data => {
+                        return data.files;
+                    })
+
+                let html = ''
+                let newPath = ''
+                data.forEach(element => {
+                    const { name, type, path, mtime } = element;
+                    if (type == 'Folder') {
+                        html += `<tr>
+                                <td>
+                                    <i class="fa fa-folder"></i>
+                                    <a class="folder" href="#" onclick="moveFolder('${path}')">
+                                        ${name}
+                                    </a>
+                                </td>
+                                <td>
+                                    ${type}
+                                </td>
+                                <td>-</td>
+                                <td>
+                                    ${mtime}
+                                </td>
+                                <td>
+                                    <span data-path="${path}" onclick="downloadFolder(this)"><i
+                                        class="fa fa-download action"></i></span>
+                                        <span data-path="${path}" onclick="openEditModal(this)"><i
+                                            class="fa fa-edit action"></i></span>    
+                                    <span data-path="${path}" onclick="openDeleteModal(this)"><i
+                                                class="fa fa-trash action"></i></span>
+                                </td>
+                            </tr>`
+                    } else {
+                        const { icon, size, pathImage } = element;
+
+                        html += `<tr>
+                                <td>
+                                    <i class="${icon}"></i>
+                                     <a class="folder" href="${pathImage}" target="_blank">
+                                            ${name}
+                                        </a>
+                                </td>
+                                <td>
+                                    ${type}
+                                </td>
+                                <td>
+                                    ${size} MB
+                                </td>
+                                <td>
+                                    ${mtime}
+                                </td>
+                                <td>
+                                    <span data-path="${path}" ><a
+                                            class="fa fa-download action" download="${pathImage}" href="${pathImage}"></a></span>
+                                    <span data-path="${path}" onclick="openEditModal(this)"><i
+                                        class="fa fa-edit action"></i></span>                                
+                                    <span data-path="${path}" onclick="openDeleteModal(this)"><i
+                                                class="fa fa-trash action"></i></span>
+                                </td>
+                            </tr>`
+                    }
+
+                });
+
+                document.getElementById('table-files').innerHTML = html;
+
+                //set breadcrumb
+                setBreadcrumb(target);
+            }
+
+            let deleteFile = null;
+            //open modal delete
+            function openDeleteModal(e) {
+                const path = e.dataset.path
+
+                const modal = document.getElementById('confirm-delete');
+                const modalBody = modal.querySelector('.modal-body strong');
+                modalBody.innerHTML = path.split('-').pop();
+
+                $('#confirm-delete').modal('show');
+                deleteFile = path;
+
+            }
+
+
+            //rename file
+            let renameFile = null;
+            function openEditModal(e) {
+                const path = e.dataset.path
+                console.log(path);
+                const modal = document.getElementById('confirm-rename');
+                const modalBody1 = modal.querySelector('.modal-body strong');
+                const modalBody2 = modal.querySelector('.modal-body input');
+                modalBody1.innerHTML = path.split('-').pop();
+                modalBody2.value = path.split('-').pop();
+
+                $('#confirm-rename').modal('show');
+                renameFile = path;
+            }
+
+            function callAPIRename() {
+                const newName = document.getElementById('new-name').value;
+                console.log("newName: ",newName);
+
+                fetch('/' + renameFile, {
+                    method: 'PUT',
+                     headers: {
+                         'Content-Type': 'application/json'
+                     },
+                     body: JSON.stringify({newName})
+                })
+                    .then(res => res.json())
+                    .then(res => {
+                        if (res.status == 'success') {
+                            const oldName = renameFile.replace("-","");
+                            document.querySelectorAll('#table-files tr').forEach(function (item) {
+                                const fileName = item.querySelector('td:nth-child(1) a').innerHTML.toString().trim();
+                                if (fileName == oldName) {
+                                    item.querySelector('td:nth-child(1) a').innerHTML = newName
+                                }
+                            });
+                        } else {
+                            alert('error');
+                        }
+                    })
+
+                    $('#confirm-rename').modal('hide');
+                
+            }
+
+            function downloadFolder(e) {
+                const path = e.dataset.path
+                fetch(`/folders/${path}`, {
+                    method: 'GET'
+                })
+                    .then(res => console.log(res))
+                    .then(res => {
+                        if (res.status == 'success') {
+                            
+                        } else {
+                            alert('error');
+                        }
+                    })                
+            }
+
+            function deleteAcp() {
+
+                fetch('/' + deleteFile, {
+                    method: 'DELETE',
+                })
+                    .then(res => res.json())
+                    .then(res => {
+                        if (res.status == 'success') {
+                            let fileDelete = deleteFile.split('-').pop();
+
+                            document.querySelectorAll('#table-files tr').forEach(function (item) {
+                                const fileName = item.querySelector('td:nth-child(1) a').innerHTML.toString().trim();
+                                if (fileName == fileDelete) {
+                                    item.remove();
+                                }
+                            });
+
+
+                        } else {
+                            alert('error');
+                        }
+                    })
+            }
+
+            // search file
+            const search = document.getElementById('search');
+            search.addEventListener('keyup', function () {
+                const value = this.value;
+                const table = document.getElementById('table-files');
+                const tr = table.querySelectorAll('tr');
+                tr.forEach(function (item) {
+                    const fileName = item.querySelector('td:nth-child(1) a').innerHTML.toString().trim().toLowerCase();
+                    if (fileName.indexOf(value.toLowerCase()) != -1) {
+                        item.style.display = 'table-row';
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+            });
+
+
+
+        </script>
+</body>
+
+</html>

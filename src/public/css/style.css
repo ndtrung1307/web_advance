@@ -1,0 +1,85 @@
+footer {
+	position: fixed;
+	left: 0;
+	bottom: 0;
+	width: 100%;
+	background-color: red;
+	color: white;
+	text-align: center;
+}
+
+.fa-solid,
+.fa,
+.fas {
+	color: #858585;
+}
+
+.fa-folder {
+	color: rgb(74, 158, 255);
+}
+
+i.fa-solid,
+i.fa,
+table i.fas {
+	font-size: 16px;
+	margin-right: 6px;
+}
+
+table a {
+	font-size: 16px;
+	margin-right: 6px;
+}
+
+#breadcrumb .breadcrumb-item.active a {
+	cursor: pointer;
+	color: #6c757d !important;
+}
+
+a {
+	color: black;
+}
+
+.file-upload {
+	position: relative;
+	transition: all 0.3s ease;
+}
+
+#btn-close-upload {
+	position: absolute;
+	right: 0;
+	top: 0;
+	cursor: pointer;
+}
+
+#table-files input {
+	border: none;
+	background-color: transparent;
+	outline: 1px solid #ccc;
+}
+
+#table-files input:active {
+	background-color: #f1f1f1;
+}
+
+#table-files td:nth-child(1) {
+	width: 30%;
+}
+
+#table-files span {
+	cursor: pointer;
+}
+
+.folder {
+	height: 22px;
+	width: 190px;
+	/* padding: 0; */
+	overflow: hidden;
+	/* position: relative; */
+	display: inline-block;
+	/* margin: 0 5px 0 5px; */
+	/* text-align: center; */
+	text-decoration: none;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	/* color: #000; */
+}
